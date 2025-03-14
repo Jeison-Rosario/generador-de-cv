@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de CV</title>
+    <link rel="stylesheet" href="assets/css/lib/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/css/site/site.css" />
+</head>
+<body>
+    <main class="container-fluid">
+        <div class="row d-flexbox justify-content-center mt-2 mb-5">
+            <div class="col-10 col-sm-8">
+                <div class="cv">
+                    <div class="cv-header bg-primary text-light text-center py-3 rounded">
+                        <h3>Generador de Curriculum Vitae</h3>
+                    </div>
+                    <div class="cv-body">
+                        <h5 class="text-center mt-4">Información personal</h5>
+
+                        <div class="mb-3">
+                        <label for="name" class="form-label">Nombre completo</label>
+                        <input type="text" class="form-control" id="name" placeholder="Nombre">
+                        </div>
+                        <div class="mb-3">
+                        <label for="title" class="form-label">Ocupación</label>
+                        <input type="email" class="form-control" id="title" placeholder="Ocupación">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <input type="text" class="form-control" id="email" placeholder="Correo Electrónico">
+                        </div>
+                        <div class="mb-3">
+                        <label for="phone-number" class="form-label">Número de telefono</label>
+                        <input type="tel" class="form-control" id="phone-number" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Número de telefono">
+                        </div>
+                        <div class="mb-3">
+                        <label for="birthday" class="form-label">Fecha de nacimiento</label>
+                        <input type="date" class="form-control" id="birthday">
+                        </div>
+                        <div class="mb-3">
+                        <label for="link" class="form-label">Enlace de LinkedIn</label>
+                        <input type="url" class="form-control" id="link" placeholder="Ponga el enlace aquí...">
+                        </div>
+
+                        <h5 class="text-center mt-4">Habilidades</h5>
+
+                        <div class="mb-3 row" id="skills-container">
+                            <label for="skill" class="form-label">Inserte una habilidad y seleccione su nivel de manejo</label>
+                            <div class="col-sm-9 mb-1" data-static>
+                                <input type="text" class="form-control input" id="skill" placeholder="Habilidad">
+                            </div>
+                            <div class="col-sm-3 mb-1" data-static>
+                                <select class="form-select select" id="skill-level">
+                                    <option value="">Seleccione una opción</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button onclick="addSkill()" type="button" class="btn btn-outline-primary mt-2 ">Agregar habilidad</button>
+                        
+                        <h5 class="text-center mt-4">Software</h5>
+
+                        <div class="mb-3 row" id="software-container">
+                            <label for="IDE" class="form-label">Inserte un Software y seleccione su nivel de manejo</label>
+                            <div class="col-sm-9 mb-1" data-static>
+                                <input type="text" class="form-control input" id="IDE" placeholder="Software">
+                            </div>
+                            <div class="col-sm-3 mb-1" data-static>
+                                <select class="form-select select" id="IDE-level">
+                                    <option value="">Seleccione una opción</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button onclick="addSoftware()" type="button" class="btn btn-outline-primary mt-2">Agregar software</button>
+
+                        <h5 class="text-center mt-4">Idiomas</h5>
+
+                        <div class="mb-3 row" id="language-container">
+                            <label for="language" class="form-label">Inserte un idioma y seleccione su nivel de manejo</label>
+                            <div class="col-sm-9 mb-1" data-static>
+                                <input type="text" class="form-control input" id="language" placeholder="Idioma">
+                            </div>
+                            <div class="col-sm-3 mb-1" data-static>
+                                <select class="form-select select" id="language-level">
+                                    <option value="">Seleccione una opción</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button onclick="addLanguage()" type="button" class="btn btn-outline-primary mt-2">Agregar idioma</button>
+
+                        <h5 class="text-center mt-4 mb-4">Resumen profesional</h5>
+
+                        <div class="mb-3">
+                            <textarea class="form-control" id="summary" rows="5" placeholder="Resumen de su carrera profesional"></textarea>
+                        </div>
+
+                        <h5 class="text-center mt-4">Experiencia laboral</h5>
+
+                        <div class="mb-3 row" id="experience-container">
+                            <label for="experience" class="form-label">Inserte experiencia laboral y selecciona la fecha de inicio y final</label>
+                            <div class="col-sm-6 mb-1" data-static>
+                                <input type="text" class="form-control input" id="experience" placeholder="Empresa">
+                            </div>
+
+                            <div class="col-sm-3 mb-1" data-static>
+                                <input type="date" class="form-control date" id="experience-start">
+                            </div>
+                            <div class="col-sm-3 mb-1" data-static>
+                                <input type="date" class="form-control date1" id="experience-end">
+                            </div>
+                        </div>
+
+                        <button onclick="addExperience()" type="button" class="btn btn-outline-primary mt-2">Agregar experiencia</button>
+
+                        <h5 class="text-center mt-4">Educación</h5>
+
+                        <div class="mb-3 row" id="education-container">
+                            <label for="education" class="form-label">Inserte institución educativa y selecciona la fecha de inicio y final</label>
+                            <div class="col-sm-6 mb-1" data-static>
+                                <input type="text" class="form-control input" id="education" placeholder="Institución"> 
+                            </div>
+
+                            <div class="col-sm-3 mb-1" data-static>
+                                <input type="date" class="form-control date" id="education-start">
+                            </div>
+                            <div class="col-sm-3 mb-1" data-static>
+                                <input type="date" class="form-control date1" id="education-end">
+                            </div>
+                        </div>
+                        
+                        <button onclick="addEducation()" type="button" class="btn btn-outline-primary mt-2">Agregar educación</button>
+
+                        <h5 class="text-center mt-4">Certificaciones</h5>
+
+                        <div class="mb-3 row" id="certification-container">
+                            <label for="certification" class="form-label">Inserte certificación y selecciona la fecha de inicio y final</label>
+                            <div class="col-sm-6 mb-1" data-static>
+                                <input type="text" class="form-control input" id="certification" placeholder="Certificado">
+                            </div>
+
+                            <div class="col-sm-3 mb-1" data-static>
+                                <input type="date" class="form-control date" id="certification-start">
+                            </div>
+                            <div class="col-sm-3 mb-1" data-static>
+                                <input type="date" class="form-control date1" id="certification-end">
+                            </div>
+                        </div>
+                        
+                        <button onclick="addCertification()" type="button" class="btn btn-outline-primary mt-2">Agregar certificación</button>
+
+                        <div class="d-grid gap-3 col-3 mx-auto"> 
+                            <button onclick="cvVerification()" type="button" class="btn btn-primary mt-2">Generar CV</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-5 col-12 col-sm-12" id="button">
+            <div class="row mt-2 mb-2 col-12 col-sm-12 offset-1" id="column"></div>
+            <div class="row mt-2 mb-2 col-10 col-sm-10 offset-1" id="cv-container"></div>
+        </div>
+    </main>
+    <script src="assets/js/lib/bootstrap/bootstrap.min.js"></script>
+    <script src="assets/js/site/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>
