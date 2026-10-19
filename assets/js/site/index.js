@@ -1,875 +1,152 @@
-const inputName = document.getElementById("name");
-const inputTitle = document.getElementById("title");
-const inputEmail = document.getElementById("email");
-const inputPhone = document.getElementById("phone-number");
-const birthdayDate= document.getElementById("birthday");
-const inputLink = document.getElementById("link");
-const inputSkill = document.getElementById("skill");
-const skillLevelSelector = document.getElementById("skill-level");
-const inputIde = document.getElementById("IDE");
-const ideLevelSelector = document.getElementById("IDE-level");
-const inputLanguage = document.getElementById("language");
-const languageLevelSelector = document.getElementById("language-level");
-const inputSummary = document.getElementById("summary");
-const inputExperience = document.getElementById("experience");
-const startDateExperience = document.getElementById("experience-start");
-const endDateExperience = document.getElementById("experience-end");
-const inputEducation = document.getElementById("education");
-const startDateEducation = document.getElementById("education-start");
-const endDateEducation = document.getElementById("education-end");
-const inputCertification = document.getElementById("certification");
-const startDateCertification = document.getElementById("certification-start");
-const endDateCertification = document.getElementById("certification-end");
-const skillsContainer = document.getElementById("skills-container");
-const softwareContainer = document.getElementById("software-container");
-const languageContainer = document.getElementById("language-container");
-const experienceContainer = document.getElementById("experience-container");
-const educationContainer = document.getElementById("education-container");
-const certificationContainer = document.getElementById("certification-container");
-const columna = document.getElementById("column");
-const cvContainer = document.getElementById("cv-container");
-const button = document.getElementById("button");
-let cv = null;
-let skillCounter = 0; 
-let softwareCounter = 0;
-let languageCounter = 0;
-let experienceCounter = 0;
-let educationCounter = 0;
-let certificationCounter = 0;
-
-function validate(){
-    let isValid = true;
-    isValid = inputValidator(inputName, isValid);
-    isValid = inputValidator(inputTitle, isValid);
-    isValid = inputValidator(inputEmail, isValid);
-    isValid = inputValidator(inputPhone, isValid);
-    isValid = inputValidator(birthdayDate, isValid);
-    isValid = inputValidator(inputLink, isValid);
-    isValid = inputValidator(inputSkill, isValid);
-    isValid = inputValidator(skillLevelSelector, isValid);
-    isValid = inputValidator(inputIde, isValid);
-    isValid = inputValidator(ideLevelSelector, isValid);
-    isValid = inputValidator(ideLevelSelector, isValid);
-    isValid = inputValidator(inputLanguage, isValid);
-    isValid = inputValidator(languageLevelSelector, isValid);
-    isValid = inputValidator(inputSummary, isValid);
-    isValid = inputValidator(inputExperience, isValid);
-    isValid = inputValidator(startDateExperience, isValid);
-    isValid = inputValidator(endDateExperience, isValid);
-    isValid = inputValidator(inputEducation, isValid);
-    isValid = inputValidator(startDateEducation, isValid);
-    isValid = inputValidator(endDateEducation, isValid);
-    isValid = inputValidator(inputCertification, isValid);
-    isValid = inputValidator(startDateCertification, isValid);
-    isValid = inputValidator(endDateCertification, isValid);
-
-    document.querySelectorAll("#skills-container .form-control").forEach(input => {
-        isValid = inputValidator(input, isValid);
-    });
-    document.querySelectorAll("#skills-container .form-select").forEach(select => {
-        isValid = inputValidator(select, isValid);
-    });
-    document.querySelectorAll("#software-container .form-control").forEach(input => {
-        isValid = inputValidator(input, isValid);
-    });
-    document.querySelectorAll("#software-container .form-select").forEach(select => {
-        isValid = inputValidator(select, isValid);
-    });
-    document.querySelectorAll("#language-container .form-control").forEach(input => {
-        isValid = inputValidator(input, isValid);
-    });
-    document.querySelectorAll("#language-container .form-select").forEach(select => {
-        isValid = inputValidator(select, isValid);
-    });
-    document.querySelectorAll("#experience-container .form-control").forEach(input => {
-        isValid = inputValidator(input, isValid);
-    });
-    document.querySelectorAll("#education-container .form-control").forEach(input => {
-        isValid = inputValidator(input, isValid);
-    });
-    document.querySelectorAll("#certification-container .form-control").forEach(input => {
-        isValid = inputValidator(input, isValid);
-    });
-
-    return isValid;
-}
-
-function inputValidator(input, isValid){
-    const value = input.value;
-    if(value == "" || value == null || value == undefined){
-        input.classList.add("input-error");
-        input.classList.remove("input-success");
-        return false;
-    } else{
-        input.classList.add("input-success");
-        input.classList.remove("input-error");
-        if(!isValid){
-            return false;
-        } 
-        return true;
+/* Form/controller: user content is always rendered as text, never HTML. */
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const { groups, levels, clean, safeUrl, validate, period } = window.CVData;
+  const personal = ['name','title','email','phone','birthday','link','summary'];
+  const form = $('formulario');
+  let sequence = 0, generated = null;
+  function node(tag, text, className) {
+    const el = document.createElement(tag);
+    if (text !== undefined) el.textContent = text;
+    if (className) el.className = className;
+    return el;
+  }
+  function field(row, name, label, type='text', maxLength=140) {
+    const wrap = node('div', undefined, 'field');
+    const id = row.id + '-' + name;
+    const input = node(type === 'textarea' ? 'textarea' : type === 'select' ? 'select' : 'input');
+    input.id = id; input.dataset.field = name;
+    if (input.tagName === 'INPUT') input.type = type;
+    if (type === 'textarea') input.rows = 3;
+    if (['text','textarea'].includes(type)) input.maxLength = maxLength;
+    if (type === 'month') input.min = '1900-01';
+    if (type === 'select') {
+      const empty = node('option', 'Selecciona un nivel'); empty.value=''; input.append(empty);
+      levels.forEach((level,i) => {const opt=node('option', `${i+1} · ${level}`); opt.value=String(i+1); input.append(opt);});
     }
-}
-
-function SslData(container) {
-    const inputs = container.querySelectorAll(".input");
-    const selects = container.querySelectorAll(".select");
-
-    const inputValues = Array.from(inputs).map(input => input.value.trim() || "Sin descripción");
-    const selectValues = Array.from(selects).map(select => select.value.trim() || "0");
-
-    const maxLength = Math.max(inputValues.length, selectValues.length);
-    let resultArray = [];
-
-    for (let i = 0; i < maxLength; i++) {
-        resultArray.push({
-            input: inputValues[i],
-            rating: selectValues[i]
-        });
+    const lab = node('label',label);lab.htmlFor=id;
+    const error=node('p','', 'field-error');error.id=id+'-error';input.setAttribute('aria-describedby',error.id);
+    wrap.append(lab,input,error); return wrap;
+  }
+  function addRow(key, values={}, focus=true) {
+    const container = $(key+'-rows');
+    if (container.children.length>=20) { $('status').textContent='Puedes agregar hasta 20 entradas por sección.';return; }
+    const group = groups[key], row = node('fieldset',undefined,'row-card');
+    row.id='entry-'+(++sequence);row.dataset.group=key;
+    row.append(node('legend',group.name+' · '+(container.children.length+1)));
+    const fields=node('div',undefined,'fields'+(group.kind==='rating'?' rating-fields':''));
+    fields.append(field(row,'name',group.name));
+    if (group.kind==='rating') fields.append(field(row,'level','Nivel de manejo','select'));
+    else {
+      fields.append(field(row,'org',group.org),field(row,'start','Desde','month'),field(row,'end','Hasta','month'));
+      const checkWrap=node('div',undefined,'field wide');
+      const label=node('label',undefined,'check');const current=node('input');current.type='checkbox';current.id=row.id+'-current';current.dataset.field='current';
+      label.append(current,document.createTextNode('En curso / empleo actual'));checkWrap.append(label);fields.append(checkWrap);
+      const desc=field(row,'description','Logros o descripción (opcional)','textarea',2000);desc.classList.add('wide');fields.append(desc);
     }
-
-    return resultArray;
-}
-
-function EecData(container) {
-    const textInputs = container.querySelectorAll(".input");
-    const startDateInputs = container.querySelectorAll(".date");
-    const endDateInputs = container.querySelectorAll(".date1");
-
-    const inputTextValues = Array.from(textInputs).map(input => input.value.trim() || "Sin descripción");
-    const inputStartDateValues = Array.from(startDateInputs).map(input => input.value.trim());
-    const inputEndDateValues = Array.from(endDateInputs).map(input => input.value.trim() || "Fecha fin no definida");
-
-    const maxLength = Math.max(inputTextValues.length, inputStartDateValues.length, inputEndDateValues.length);
-    let resultArray = [];
-
-    for (let i = 0; i < maxLength; i++) {
-        resultArray.push({
-            text: inputTextValues[i],
-            startDate: inputStartDateValues[i],
-            endDate: inputEndDateValues[i]
-        });
+    const remove=node('button','Eliminar entrada','secondary remove');remove.type='button';remove.dataset.remove='true';remove.setAttribute('aria-label','Eliminar entrada de '+group.label);
+    row.append(fields,remove);container.append(row);
+    for (const [name,value] of Object.entries(values)) {
+      const input=row.querySelector('[data-field="'+name+'"]');if(!input) continue;
+      if(name==='current') input.checked=Boolean(value);else input.value=value;
     }
-
-    return resultArray;
-}
-
-function addSkill() {
-    skillCounter++;
-
-    const col9 = document.createElement("div");
-    col9.classList.add("mb-1", "col-sm-9");
-
-    const fc = document.createElement("input");
-    fc.classList.add("form-control", "input"); 
-    fc.placeholder = "Habilidad";
-    fc.id = `skill-${skillCounter}`; 
-
-    const col3 = document.createElement("div");
-    col3.classList.add("mb-1", "col-sm-3");
-
-    const fmSl = document.createElement("select"); 
-    fmSl.classList.add("form-select", "select"); 
-    fmSl.id = `skill-level-${skillCounter}`;
-
-    for (let i = 0; i <= 5; i++) {
-        let option = document.createElement("option");
-        option.value = i || ""; 
-        option.textContent = i === 0 ? "Seleccione una opción" : i;
-        fmSl.appendChild(option);
+    syncCurrent(row);
+    if(focus) row.querySelector('input').focus();
+  }
+  function syncCurrent(row) {
+    const check=row.querySelector('[data-field="current"]');
+    if(check) row.querySelector('[data-field="end"]').disabled=check.checked;
+  }
+  function initGroups() {
+    for(const [key,group] of Object.entries(groups)) {
+      const section=node('section',undefined,'group');section.setAttribute('aria-labelledby',key+'-title');
+      const title=node('h3',group.label);title.id=key+'-title';section.append(title,node('p','Opcional. Las entradas completamente vacías no se incluyen.'));
+      const rows=node('div');rows.id=key+'-rows';
+      const add=node('button','Agregar '+group.name.toLowerCase(),'secondary');add.type='button';add.dataset.add=key;
+      section.append(rows,add);$('dynamic-sections').append(section);addRow(key,{},false);
     }
-
-    col9.appendChild(fc);
-    col3.appendChild(fmSl);
-
-    skillsContainer.appendChild(col9);
-    skillsContainer.appendChild(col3);
-}
-
-function addSoftware() {
-    softwareCounter++;
-
-    const col9 = document.createElement("div");
-    col9.classList.add("col-sm-9", "mb-1");
-
-    const fc = document.createElement("input");
-    fc.classList.add("form-control", "input");
-    fc.placeholder = "Software";
-    fc.id = `software-${softwareCounter}`;
-
-    const col3 = document.createElement("div");
-    col3.classList.add("col-sm-3", "mb-1");
-
-    const fmSl = document.createElement("select"); 
-    fmSl.classList.add("form-select", "select");
-    fmSl.id = `software-level-${softwareCounter}`;
-
-    for (let i = 0; i <= 5; i++) {
-        let option = document.createElement("option");
-        option.value = i || "";
-        option.textContent = i === 0 ? "Seleccione una opción" : i;
-        fmSl.appendChild(option);
+  }
+  function collect() {
+    const data={};for(const key of personal) data[key]=clean($(key).value);
+    const url=safeUrl(data.link);if(url) data.link=url;
+    for(const key of Object.keys(groups)) {
+      data[key]=Array.from($(key+'-rows').children).map(row=>{
+        const value={id:row.id};row.querySelectorAll('[data-field]').forEach(input=>{value[input.dataset.field]=input.type==='checkbox'?input.checked:clean(input.value);});return value;
+      }).filter(row=>Object.entries(row).some(([key,value])=>key!=='id'&&value!==''&&value!==false));
     }
-
-    col9.appendChild(fc);
-    col3.appendChild(fmSl);
-
-    softwareContainer.appendChild(col9);
-    softwareContainer.appendChild(col3);
-}
-
-function addLanguage() {
-    languageCounter++;
-
-    const col9 = document.createElement("div");
-    col9.classList.add("col-sm-9", "mb-1");
-
-    const fc = document.createElement("input");
-    fc.classList.add("form-control", "input");
-    fc.placeholder = "Idioma";
-    fc.id = `language-${languageCounter}`;
-
-    const col3 = document.createElement("div");
-    col3.classList.add("col-sm-3", "mb-1");
-
-    const fmSl = document.createElement("select"); 
-    fmSl.classList.add("form-select", "select");
-    fmSl.id = `language-level-${languageCounter}`;
-
-    for (let i = 0; i <= 5; i++) {
-        let option = document.createElement("option");
-        option.value = i || "";
-        option.textContent = i === 0 ? "Seleccione una opción" : i;
-        fmSl.appendChild(option);
+    return data;
+  }
+  function clearErrors() {
+    form.querySelectorAll('[aria-invalid]').forEach(el=>el.removeAttribute('aria-invalid'));
+    document.querySelectorAll('.field-error').forEach(el=>el.textContent='');$('errors').replaceChildren();$('errors').hidden=true;
+  }
+  function showErrors(errors) {
+    clearErrors();if(!errors.length) return;
+    const list=node('ul');$('errors').append(node('strong','Revisa los siguientes campos:'),list);$('errors').hidden=false;
+    for(const error of errors) {
+      const input=$(error.field);if(input) {input.setAttribute('aria-invalid','true');const message=$(error.field+'-error');if(message) message.textContent=error.message;}
+      const item=node('li'),link=node('a',error.message);link.href='#'+error.field;
+      link.addEventListener('click',event=>{event.preventDefault();input?.focus();});item.append(link);list.append(item);
     }
-
-    col9.appendChild(fc);
-    col3.appendChild(fmSl);
-
-    languageContainer.appendChild(col9);
-    languageContainer.appendChild(col3);
-}
-
-function addExperience() {
-    experienceCounter++;
-
-    const col9 = document.createElement("div");
-    col9.classList.add("col-sm-6", "mb-1");
-
-    const fc = document.createElement("input");
-    fc.classList.add("form-control", "input");
-    fc.placeholder = "Empresa";
-    fc.id = `experience-${experienceCounter}`;
-
-    const col3 = document.createElement("div");
-    col3.classList.add("col-sm-3", "mb-1");
-
-    const col_3 = document.createElement("div");
-    col_3.classList.add("col-sm-3", "mb-1");
-
-    const eS = document.createElement("input"); 
-    eS.classList.add("form-control", "date");
-    eS.type = "date";
-    eS.id = `experience-start-${experienceCounter}`;
-
-    const eE = document.createElement("input"); 
-    eE.classList.add("form-control", "date1");
-    eE.type = "date";
-    eE.id = `experience-end-${experienceCounter}`;
-
-    col9.appendChild(fc);
-    col3.appendChild(eS);
-    col_3.appendChild(eE);
-
-    experienceContainer.appendChild(col9);
-    experienceContainer.appendChild(col3);
-    experienceContainer.appendChild(col_3);
-}
-
-function addEducation() {
-    educationCounter++;
-
-    const col9 = document.createElement("div");
-    col9.classList.add("col-sm-6", "mb-1");
-
-    const fc = document.createElement("input");
-    fc.classList.add("form-control", "input");
-    fc.placeholder = "Institución";
-    fc.id = `education-${educationCounter}`;
-
-    const col3 = document.createElement("div");
-    col3.classList.add("col-sm-3", "mb-1");
-
-    const col_3 = document.createElement("div");
-    col_3.classList.add("col-sm-3", "mb-1");
-
-    const eS = document.createElement("input"); 
-    eS.classList.add("form-control", "date");
-    eS.type = "date";
-    eS.id = `education-start-${educationCounter}`;
-
-    const eE = document.createElement("input"); 
-    eE.classList.add("form-control", "date1");
-    eE.type = "date";
-    eE.id = `education-end-${educationCounter}`;
-
-    col9.appendChild(fc);
-    col3.appendChild(eS);
-    col_3.appendChild(eE);
-
-    educationContainer.appendChild(col9);
-    educationContainer.appendChild(col3);
-    educationContainer.appendChild(col_3);
-}
-
-function addCertification() {
-    certificationCounter++;
-
-    const col9 = document.createElement("div");
-    col9.classList.add("col-sm-6", "mb-1");
-
-    const fc = document.createElement("input");
-    fc.classList.add("form-control", "input");
-    fc.placeholder = "Certificado";
-    fc.id = `certification-${certificationCounter}`;
-
-    const col3 = document.createElement("div");
-    col3.classList.add("col-sm-3", "mb-1");
-
-    const col_3 = document.createElement("div");
-    col_3.classList.add("col-sm-3", "mb-1");
-
-    const cS = document.createElement("input"); 
-    cS.classList.add("form-control", "date");
-    cS.type = "date";
-    cS.id = `certification-start-${certificationCounter}`;
-
-    const cE = document.createElement("input"); 
-    cE.classList.add("form-control", "date1");
-    cE.type = "date";
-    cE.id = `certification-end-${certificationCounter}`;
-
-    col9.appendChild(fc);
-    col3.appendChild(cS);
-    col_3.appendChild(cE);
-
-    certificationContainer.appendChild(col9);
-    certificationContainer.appendChild(col3);
-    certificationContainer.appendChild(col_3);
-}
-
-function cvVerification() {
-    if (cvContainer.hasChildNodes()) {
-        remove(button);
+    $(errors[0].field)?.focus();
+  }
+  function markDirty() {
+    if(generated) { $('status').textContent='Hay cambios pendientes. Actualiza la vista previa antes de descargar.';$('download').disabled=true;$('print').disabled=true; }
+  }
+  function render(data) {
+    const article=node('article',undefined,'cv-document');article.setAttribute('aria-label','Currículum de '+data.name);
+    article.append(node('h2',data.name),node('p',data.title,'cv-subtitle'));
+    article.append(node('p',[data.email,data.phone].filter(Boolean).join(' | '),'cv-contact'));
+    if(data.link) {const p=node('p',undefined,'cv-contact'),link=node('a',data.link);link.href=data.link;link.target='_blank';link.rel='noopener noreferrer';p.append(link);article.append(p);}
+    if(data.birthday) article.append(node('p','Nacimiento: '+data.birthday.split('-').reverse().join('/'),'cv-contact'));
+    if(data.summary) {const section=node('section');section.append(node('h3','Perfil profesional'),node('p',data.summary));article.append(section);}
+    for(const key of ['experience','education','certifications','skills','software','languages']) {
+      if(!data[key].length) continue;
+      const section=node('section');section.append(node('h3',groups[key].label));
+      if(groups[key].kind==='rating') {const ul=node('ul',undefined,'cv-list');data[key].forEach(row=>ul.append(node('li',`${row.name} - ${levels[Number(row.level)-1]} (${row.level}/5)`)));section.append(ul);}
+      else for(const row of data[key]) {const entry=node('div',undefined,'cv-entry');entry.append(node('h4',row.name+' | '+row.org),node('p',period(row),'cv-date'));if(row.description) entry.append(node('p',row.description));section.append(entry);}
+      article.append(section);
     }
-    createCV();
-}
-
-function createCV(){
-    if(validate()){
-        cv = document.createElement("div");
-        cv.setAttribute("class", "mt-2 row d-flexbox justify-content-center");
-    
-        const cvHeader = document.createElement("div");
-        cvHeader.setAttribute("class", "bg-dark text-light text-center rounded col-sm-10");
-    
-        const h3CV = document.createElement("h3");
-        h3CV.textContent = "SU CV ha sido generado";
-    
-        const column = document.createElement("div");
-        column.setAttribute("class", "card col-sm-3 py-4 mb-5 me-1 column");
-
-        const divNameTitle = document.createElement("div");
-        divNameTitle.setAttribute("class", "mb-2 text-center");
-    
-        const h3Name = document.createElement("h3");
-        h3Name.textContent = `${inputName.value}`.toUpperCase();
-    
-        const h5Title = document.createElement("h6");
-        h5Title.textContent = `${inputTitle.value}`.toUpperCase();
-    
-        const divCardPersonalInfo = document.createElement("div");
-        divCardPersonalInfo.setAttribute("class", "mb-3");
-    
-        const piHeader = document.createElement("div");
-        piHeader.setAttribute("class", "card-header bg-dark text-light text-center");
-    
-        const h5Header = document.createElement("h5");
-        h5Header.setAttribute("class", "text-center fw-bold");
-        h5Header.textContent = "Información personal";
-    
-        const piBody = document.createElement("div");
-        piBody.setAttribute("class", "card-body");
-    
-        const ulPiBody = document.createElement("ul");
-        ulPiBody.setAttribute("class", "list-group list-group-flush");
-    
-        const divEmail = document.createElement("div");
-        divEmail.setAttribute("class", "mb-2");
-    
-        const emailLabel = document.createElement("label");
-        emailLabel.setAttribute("class", "form-label fw-bold");
-        emailLabel.textContent = "Correo Electrónico:";
-    
-        const liEmail = document.createElement("li");
-        liEmail.setAttribute("class", "list-group-item");
-        liEmail.textContent = `${inputEmail.value}`;
-    
-        const divPhone = document.createElement("div");
-        divPhone.setAttribute("class", "mb-2");
-    
-        const phoneLabel = document.createElement("label");
-        phoneLabel.setAttribute("class", "form-label fw-bold");
-        phoneLabel.textContent = "Número de teléfono:";
-    
-        const liPhone = document.createElement("li");
-        liPhone.setAttribute("class", "list-group-item");
-        liPhone.textContent = `${inputPhone.value}`;
-    
-        const divBirthdayDate = document.createElement("div");
-        divBirthdayDate.setAttribute("class", "mb-2");
-    
-        const birthdayDateLabel = document.createElement("label");
-        birthdayDateLabel.setAttribute("class", "form-label fw-bold");
-        birthdayDateLabel.textContent = "Fecha de nacimiento:";
-    
-        const liBirthdaydate = document.createElement("li");
-        liBirthdaydate.setAttribute("class", "list-group-item");
-        liBirthdaydate.textContent = `${birthdayDate.value}`;
-    
-        const divLink = document.createElement("div");
-        divLink.setAttribute("class", "mb-2");
-    
-        const linkLabel = document.createElement("label");
-        linkLabel.setAttribute("class", "form-label fw-bold");
-        linkLabel.textContent = "LinkedIn:";
-    
-        const liLink = document.createElement("li");
-        liLink.setAttribute("class", "list-group-item");
-        
-        const aLink = document.createElement("a");
-        aLink.href = inputLink.value;
-        aLink.textContent = inputLink.value;
-        aLink.target = "_blank";
-    
-        const divCardSkills = document.createElement("div");
-        divCardSkills.setAttribute("class", "mb-3");
-    
-        const skillHeader = document.createElement("div");
-        skillHeader.setAttribute("class", "card-header bg-dark text-light text-center");
-    
-        const h5SkillHeader = document.createElement("h5");
-        h5SkillHeader.setAttribute("class", "text-center fw-bold");
-        h5SkillHeader.textContent = "Habilidades";
-    
-        const skillBody = document.createElement("div");
-        skillBody.setAttribute("class", "card-body");
-    
-        const ulSkillBody = document.createElement("ul");
-        ulSkillBody.setAttribute("class", "list-group list-group-flush");
-    
-        const skillData = SslData(skillsContainer);
-
-        skillData.forEach(skill => {
-            const liSkill = document.createElement("li");
-            liSkill.setAttribute("class", "list-group-item");
-
-            const skillElement = document.createElement("div");
-            skillElement.setAttribute("class", "fw-bold");
-            skillElement.textContent = skill.input;
-
-            const ratingElement = document.createElement("div");
-            ratingElement.setAttribute("class", "text-muted");
-            ratingElement.textContent = `Nivel de habilidad: ${skill.rating}/5`;
-
-            liSkill.appendChild(skillElement);
-            liSkill.appendChild(ratingElement);
-
-            ulSkillBody.appendChild(liSkill);
-        });
-    
-        const divCardSoftware = document.createElement("div");
-        divCardSoftware.setAttribute("class", "mb-3");
-    
-        const softwareHeader = document.createElement("div");
-        softwareHeader.setAttribute("class", "card-header bg-dark text-light text-center");
-    
-        const h5SoftwareHeader = document.createElement("h5");
-        h5SoftwareHeader.setAttribute("class", "text-center fw-bold");
-        h5SoftwareHeader.textContent = "Software";
-    
-        const softwareBody = document.createElement("div");
-        softwareBody.setAttribute("class", "card-body");
-    
-        const ulSoftwareBody = document.createElement("ul");
-        ulSoftwareBody.setAttribute("class", "list-group list-group-flush");
-
-        const softwareData = SslData(softwareContainer);
-    
-        softwareData.forEach(software => {
-            const liSoftware = document.createElement("li");
-            liSoftware.setAttribute("class", "list-group-item");
-
-            const softwareElement = document.createElement("div");
-            softwareElement.setAttribute("class", "fw-bold");
-            softwareElement.textContent = software.input;
-
-            const ratingElement = document.createElement("div");
-            ratingElement.setAttribute("class", "text-muted");
-            ratingElement.textContent = `Nivel de habilidad: ${software.rating}/5`;
-
-            liSoftware.appendChild(softwareElement);
-            liSoftware.appendChild(ratingElement);
-
-            ulSoftwareBody.appendChild(liSoftware);
-        });
-    
-        const divCardLanguage = document.createElement("div");
-        divCardLanguage.setAttribute("class", "mb-3");
-    
-        const LanguageHeader = document.createElement("div");
-        LanguageHeader.setAttribute("class", "card-header bg-dark text-light text-center");
-    
-        const h5LanguageHeader = document.createElement("h5");
-        h5LanguageHeader.setAttribute("class", "text-center fw-bold");
-        h5LanguageHeader.textContent = "Idiomas";
-    
-        const LanguageBody = document.createElement("div");
-        LanguageBody.setAttribute("class", "card-body");
-    
-        const ulLanguageBody = document.createElement("ul");
-        ulLanguageBody.setAttribute("class", "list-group list-group-flush");
-    
-        const languageData = SslData(languageContainer);
-    
-        languageData.forEach(language => {
-            const liLanguage = document.createElement("li");
-            liLanguage.setAttribute("class", "list-group-item");
-
-            const languageElement = document.createElement("div");
-            languageElement.setAttribute("class", "fw-bold");
-            languageElement.textContent = language.input;
-
-            const ratingElement = document.createElement("div");
-            ratingElement.setAttribute("class", "text-muted");
-            ratingElement.textContent = `Nivel de habilidad: ${language.rating}/5`;
-
-            liLanguage.appendChild(languageElement);
-            liLanguage.appendChild(ratingElement);
-
-            ulLanguageBody.appendChild(liLanguage);
-        });
-    
-        const side = document.createElement("div");
-        side.setAttribute("class", "card col-sm-6 py-4 mb-5 ms-3");
-    
-        const divCardSummary = document.createElement("div");
-        divCardSummary.setAttribute("class", "mb-2 mt-2");
-    
-        const summaryHeader = document.createElement("div");
-        summaryHeader.setAttribute("class", "card-header bg-dark text-light text-center");
-    
-        const h5SummaryHeader = document.createElement("h5");
-        h5SummaryHeader.setAttribute("class", "text-center fw-bold");
-        h5SummaryHeader.textContent = "Resumen laboral";
-    
-        const summaryBody = document.createElement("div");
-        summaryBody.setAttribute("class", "card-body");
-    
-        const ulSummaryBody = document.createElement("ul");
-        ulSummaryBody.setAttribute("class", "list-group list-group-flush");
-    
-        const liSummary = document.createElement("li");
-        liSummary.setAttribute("class", "list-group-item");
-        liSummary.textContent = `${inputSummary.value}`;
-    
-        const divCardExperience = document.createElement("div");
-        divCardExperience.setAttribute("class", "mb-2 mt-2");
-
-        const experienceHeader = document.createElement("div");
-        experienceHeader.setAttribute("class", "card-header bg-dark text-light text-center");
-
-        const h5ExperienceHeader = document.createElement("h5");
-        h5ExperienceHeader.setAttribute("class", "text-center fw-bold");
-        h5ExperienceHeader.textContent = "Experiencia laboral";
-
-        const experienceBody = document.createElement("div");
-        experienceBody.setAttribute("class", "card-body");
-
-        const ulExperienceBody = document.createElement("ul");
-        ulExperienceBody.setAttribute("class", "list-group list-group-flush");
-
-        const experienceData = EecData(experienceContainer);
-
-        experienceData.forEach(exp => {
-            const liExperience = document.createElement("li");
-            liExperience.setAttribute("class", "list-group-item");
-
-            const textElement = document.createElement("div");
-            textElement.setAttribute("class", "fw-bold");
-            textElement.textContent = exp.text;
-
-            const dateElement = document.createElement("div");
-            dateElement.setAttribute("class", "text-muted");
-            dateElement.textContent = `(${exp.startDate} - ${exp.endDate})`;
-
-            liExperience.appendChild(textElement);
-            liExperience.appendChild(dateElement);
-
-            ulExperienceBody.appendChild(liExperience);
-        });
-    
-        const divCardEducation = document.createElement("div");
-        divCardEducation.setAttribute("class", "mb-2 mt-2");
-    
-        const educationHeader = document.createElement("div");
-        educationHeader.setAttribute("class", "card-header bg-dark text-light text-center");
-    
-        const h5EducationHeader = document.createElement("h5");
-        h5EducationHeader.setAttribute("class", "text-center fw-bold");
-        h5EducationHeader.textContent = "Educación";
-    
-        const educationBody = document.createElement("div");
-        educationBody.setAttribute("class", "card-body");
-    
-        const ulEducationBody = document.createElement("ul");
-        ulEducationBody.setAttribute("class", "list-group list-group-flush");
-    
-        const educationData = EecData(educationContainer);
-
-        educationData.forEach(edu => {
-            const liEducation = document.createElement("li");
-            liEducation.setAttribute("class", "list-group-item");
-
-            const textElement = document.createElement("div");
-            textElement.setAttribute("class", "fw-bold");
-            textElement.textContent = edu.text;
-
-            const dateElement = document.createElement("div");
-            dateElement.setAttribute("class", "text-muted");
-            dateElement.textContent = `(${edu.startDate} - ${edu.endDate})`;
-
-            liEducation.appendChild(textElement);
-            liEducation.appendChild(dateElement);
-
-            ulEducationBody.appendChild(liEducation);
-        });
-    
-        const divCardcertification = document.createElement("div");
-        divCardcertification.setAttribute("class", "mb-3 mt-2");
-    
-        const certificationHeader = document.createElement("div");
-        certificationHeader.setAttribute("class", "card-header bg-dark text-light text-center");
-    
-        const h5certificationHeader = document.createElement("h5");
-        h5certificationHeader.setAttribute("class", "text-center fw-bold");
-        h5certificationHeader.textContent = "Educación";
-    
-        const certificationBody = document.createElement("div");
-        certificationBody.setAttribute("class", "card-body");
-    
-        const ulcertificationBody = document.createElement("ul");
-        ulcertificationBody.setAttribute("class", "list-group list-group-flush");
-    
-        const certificationData = EecData(certificationContainer);
-
-        certificationData.forEach(cer => {
-            const liCertification = document.createElement("li");
-            liCertification.setAttribute("class", "list-group-item");
-
-            const textElement = document.createElement("div");
-            textElement.setAttribute("class", "fw-bold");
-            textElement.textContent = cer.text;
-
-            const dateElement = document.createElement("div");
-            dateElement.setAttribute("class", "text-muted");
-            dateElement.textContent = `(${cer.startDate} - ${cer.endDate})`;
-
-            liCertification.appendChild(textElement);
-            liCertification.appendChild(dateElement);
-
-            ulcertificationBody.appendChild(liCertification);
-        });
-
-        const divDownload = document.createElement("div");
-        divDownload.setAttribute("class", "mb-3 mt-4 col-sm-10");
-
-        const btnDownload = document.createElement("button");
-        btnDownload.setAttribute("class", "btn btn-dark float-end");
-        btnDownload.textContent = "Descargar CV";
-        btnDownload.type = "button";
-        btnDownload.addEventListener("click", function () {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-        
-            const element = cvContainer; 
-        
-            setTimeout(() => {
-                html2canvas(element, {
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: true
-                }).then(canvas => {
-                    const imgData = canvas.toDataURL("image/png");
-                    const imgWidth = 190; 
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-                    let y = 10;
-                    if (imgHeight > 280) {
-                        let pages = Math.ceil(imgHeight / 280);
-                        for (let i = 0; i < pages; i++) {
-                            if (i > 0) doc.addPage();
-                            doc.addImage(imgData, "PNG", 10, y - i * 280, imgWidth, imgHeight);
-                        }
-                    } else {
-                        doc.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
-                    }
-        
-                    doc.save(`${nombre} - CV.pdf`);
-                });
-            }, 500); 
-        });
-
-        columna.appendChild(cvHeader);
-        cv.appendChild(column);
-        cv.appendChild(side);
-        button.appendChild(divDownload);
-    
-        cvHeader.appendChild(h3CV);
-
-        divDownload.appendChild(btnDownload);
-    
-        divNameTitle.appendChild(h3Name);
-        divNameTitle.appendChild(h5Title);
-    
-        divCardPersonalInfo.appendChild(piHeader);
-        divCardPersonalInfo.appendChild(piBody);
-    
-        divCardSkills.append(skillHeader);
-        divCardSkills.append(skillBody);
-    
-        piHeader.appendChild(h5Header);
-    
-        piBody.appendChild(ulPiBody);
-        piBody.appendChild(divEmail);
-        piBody.appendChild(divPhone);
-        piBody.appendChild(divBirthdayDate);
-        piBody.appendChild(divLink);
-    
-        divEmail.appendChild(emailLabel);
-        divEmail.appendChild(liEmail);
-    
-        divPhone.appendChild(phoneLabel);
-        divPhone.appendChild(liPhone);
-    
-        divBirthdayDate.appendChild(birthdayDateLabel);
-        divBirthdayDate.appendChild(liBirthdaydate);
-    
-        divLink.appendChild(linkLabel);
-        divLink.appendChild(liLink);
-        liLink.appendChild(aLink);
-    
-        skillHeader.appendChild(h5SkillHeader);
-        skillBody.appendChild(ulSkillBody);
-    
-        divCardSkills.appendChild(skillBody);
-        
-        softwareHeader.appendChild(h5SoftwareHeader);
-        softwareBody.appendChild(ulSoftwareBody);
-    
-        divCardSoftware.appendChild(softwareHeader);
-        divCardSoftware.appendChild(softwareBody);
-    
-        LanguageHeader.appendChild(h5LanguageHeader);
-        LanguageBody.appendChild(ulLanguageBody);
-    
-        divCardLanguage.appendChild(LanguageHeader);
-        divCardLanguage.appendChild(LanguageBody);
-    
-        column.appendChild(divNameTitle);
-        column.appendChild(divCardPersonalInfo);
-        column.appendChild(divCardSkills);
-        column.appendChild(divCardSoftware);
-        column.appendChild(divCardLanguage);
-    
-        summaryHeader.appendChild(h5SummaryHeader);
-        ulSummaryBody.appendChild(liSummary);
-        summaryBody.appendChild(ulSummaryBody);
-    
-        divCardSummary.appendChild(summaryHeader);
-        divCardSummary.appendChild(summaryBody);
-    
-        experienceHeader.appendChild(h5ExperienceHeader);
-        experienceBody.appendChild(ulExperienceBody);
-    
-        divCardExperience.appendChild(experienceHeader);
-        divCardExperience.appendChild(experienceBody);
-    
-        educationHeader.appendChild(h5EducationHeader);
-        educationBody.appendChild(ulEducationBody);
-    
-        divCardEducation.appendChild(educationHeader);
-        divCardEducation.appendChild(educationBody);
-    
-        certificationHeader.appendChild(h5certificationHeader);
-        certificationBody.appendChild(ulcertificationBody);
-    
-        divCardcertification.appendChild(certificationHeader);
-        divCardcertification.appendChild(certificationBody);
-    
-        side.appendChild(divCardSummary);
-        side.appendChild(divCardExperience);
-        side.appendChild(divCardEducation);
-        side.appendChild(divCardcertification);
-    
-        cvContainer.appendChild(cv);
-
-        const nombre = inputName.value;
-
-        inputClear(inputName);
-        inputClear(inputTitle);
-        inputClear(inputEmail);
-        inputClear(inputPhone);
-        inputClear(birthdayDate);
-        inputClear(inputLink);
-        inputClear(inputSkill);
-        inputClear(skillLevelSelector);
-        inputClear(inputIde);
-        inputClear(ideLevelSelector);
-        inputClear(inputLanguage);
-        inputClear(languageLevelSelector);
-        inputClear(inputSummary);
-        inputClear(inputExperience);
-        inputClear(startDateExperience);
-        inputClear(endDateExperience);
-        inputClear(inputEducation);
-        inputClear(startDateEducation);
-        inputClear(endDateEducation);
-        inputClear(inputCertification);
-        inputClear(startDateCertification);
-        inputClear(endDateCertification);
-        remove(skillsContainer);
-        remove(softwareContainer);
-        remove(languageContainer);
-        remove(experienceContainer);
-        remove(educationContainer);
-        remove(certificationContainer);
-    
-    } else{
-        alert("Todos los campos deben ser completados.");
-    } 
-}
-
-function inputClear(input) {
-    input.value = "";
-    input.classList.remove("input-success");
-    input.classList.remove("input-error");
-}
-
-function remove(container) {
-    const children = Array.from(container.children);
-    children.forEach(child => {
-        if (!child.hasAttribute("data-static")) { 
-            container.removeChild(child);
-        }
-    });
-}
+    $('preview').replaceChildren(article);generated=data;$('download').disabled=false;$('print').disabled=false;$('edit').hidden=false;
+    $('status').textContent='Vista previa actualizada. Tus datos siguen en el formulario para editarlos.';
+  }
+  function reset() {
+    form.reset();for(const key of Object.keys(groups)) {$(key+'-rows').replaceChildren();addRow(key,{},false);}
+    clearErrors();generated=null;$('download').disabled=true;$('print').disabled=true;$('edit').hidden=true;
+    $('preview').replaceChildren(node('p','Completa tus datos para generar una nueva vista previa.','empty'));
+    $('status').textContent='Formulario borrado. No hay datos guardados.';
+  }
+  personal.forEach(key=>{const input=$(key),error=node('p','','field-error');error.id=key+'-error';input.setAttribute('aria-describedby',error.id);input.after(error);});
+  $('birthday').max=new Date().toISOString().slice(0,10);
+  initGroups();
+  form.addEventListener('input',markDirty);
+  form.addEventListener('change',event=>{const row=event.target.closest('.row-card');if(row)syncCurrent(row);markDirty();});
+  form.addEventListener('click',event=>{
+    const add=event.target.closest('[data-add]');if(add){addRow(add.dataset.add);markDirty();}
+    const remove=event.target.closest('[data-remove]');if(remove){const row=remove.closest('.row-card');const key=row.dataset.group;row.remove();$(key+'-rows').nextElementSibling.focus();clearErrors();markDirty();}
+  });
+  form.addEventListener('submit',event=>{event.preventDefault();const data=collect();const errors=validate(data);showErrors(errors);if(errors.length){markDirty();return;}render(data);$('preview-title').scrollIntoView?.({behavior:'smooth',block:'start'});});
+  $('edit').addEventListener('click',()=>{$('name').focus();});
+  $('clear').addEventListener('click',()=>{if(window.confirm('¿Borrar todos los datos del formulario y la vista previa?')) reset();});
+  $('example').addEventListener('click',()=>{
+    const data=collect();const hasData=personal.some(key=>data[key])||Object.keys(groups).some(key=>data[key].length);
+    if(hasData&&!window.confirm('El ejemplo reemplazará tus datos actuales. ¿Continuar?')) return;
+    reset();const sample={name:'Alex Rivera',title:'Desarrollador de software junior',email:'alex@example.com',phone:'+1 809 555 0123',link:'https://example.com',summary:'Estudiante de desarrollo de software con interés en aplicaciones web y bases de datos. Me enfoco en crear soluciones claras, validar la información y aprender mediante proyectos prácticos.'};
+    for(const [key,value] of Object.entries(sample)) $(key).value=value;
+    const rows={skills:[{name:'JavaScript',level:'3'},{name:'Modelado de datos',level:'3'}],software:[{name:'Git y GitHub',level:'3'}],languages:[{name:'Español',level:'5'},{name:'Inglés',level:'3'}],education:[{name:'Desarrollo de Software',org:'Institución de ejemplo',start:'2024-01',current:true,description:'Formación en programación, bases de datos y desarrollo web.'}],experience:[{name:'Desarrollador de proyecto académico',org:'Equipo de ejemplo',start:'2025-01',end:'2025-05',description:'Implementé formularios y validaciones para un catálogo web. Colaboré con el equipo mediante Git y documenté los pasos de instalación.'}],certifications:[]};
+    for(const key of Object.keys(groups)){ $(key+'-rows').replaceChildren();for(const row of rows[key]) addRow(key,row,false);}
+    render(collect());clearErrors();
+  });
+  $('download').addEventListener('click',()=>{
+    if(!generated||$('download').disabled) return;
+    const button=$('download');button.disabled=true;
+    try {
+      if(!window.jspdf?.jsPDF) throw new Error('No se pudo cargar la biblioteca PDF. Revisa tu conexión o utiliza «Imprimir / guardar PDF».');
+      window.CVPdf.createPdf(generated,window.jspdf.jsPDF).save(window.CVPdf.filename(generated.name));
+      $('status').textContent='PDF generado. Comprueba la descarga en tu navegador.';
+    } catch(error) { $('status').textContent=error.message||'No se pudo generar el PDF. Utiliza la opción de impresión.'; }
+    finally {button.disabled=false;}
+  });
+  $('print').addEventListener('click',()=>{if(generated&&!$('print').disabled) window.print();});
+})();

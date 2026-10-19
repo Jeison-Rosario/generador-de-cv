@@ -1,0 +1,1 @@
+{"name":"generador-de-cv","version":"2.0.0","private":true,"description":"Generador de CV estático con validación y PDF de texto","scripts":{"test":"node --test test/*.test.cjs"},"devDependencies":{"jsdom":"^26.1.0","jspdf":"4.2.1"},"engines":{"node":">=22"}}
