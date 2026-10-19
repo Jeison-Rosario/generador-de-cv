@@ -4,8 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Crea un currículum, revisa su contenido y descarga un PDF con texto seleccionable. Sin registro ni envío de datos.">
-  <meta name="theme-color" content="#184d40">
+  <meta name="theme-color" content="#0d6efd">
   <title>Generador de CV | Jeison Rosario</title>
+  <link rel="stylesheet" href="assets/css/lib/bootstrap/bootstrap.min.css">
   <link rel="stylesheet" href="assets/css/site/site.css">
   <script defer src="assets/js/site/data.js"></script>
   <script defer src="assets/js/site/pdf.js"></script>
@@ -14,37 +15,37 @@
 </head>
 <body>
 <a class="skip" href="#formulario">Saltar al formulario</a>
-<header class="site-header"><div class="container top"><a class="brand" href="./">CV<span> / studio</span></a><a href="https://jeison-rosario.github.io/proyectos/">Portafolio de Jeison ↗</a></div></header>
 <main class="container">
-  <section class="intro"><p class="eyebrow">TU PRÓXIMO PASO PROFESIONAL</p><h1>Tu experiencia.<br><span>Bien presentada.</span></h1><p>Completa tu perfil, organiza tus logros y genera un currículum listo para compartir.</p><p class="privacy">Sin registro. Tus datos se procesan en esta pestaña y no se guardan al recargar. Descarga tu PDF antes de salir.</p></section>
+  <header class="cv-header bg-primary text-light text-center py-3 rounded"><h1>Generador de Curriculum Vitae</h1></header>
   <noscript>Activa JavaScript para completar y generar el currículum.</noscript>
   <div class="workspace">
     <section class="editor" aria-labelledby="editor-title">
-      <div class="section-top"><div><p class="eyebrow">01 / COMPLETA</p><h2 id="editor-title">Tu información</h2></div><button type="button" id="example" class="secondary">Cargar ejemplo</button></div>
-      <p>Solo los campos con * son obligatorios. Deja vacías las secciones que no necesites.</p>
+      <h2 id="editor-title" class="text-center">Información personal</h2>
+      <div class="editor-tools"><button type="button" id="example" class="secondary">Cargar ejemplo</button></div>
+      <p class="text-center">Solo los campos con * son obligatorios. Las demás secciones son opcionales.</p>
       <div id="errors" class="error-summary" role="alert" hidden></div>
       <form id="formulario" novalidate>
-        <fieldset class="personal"><legend>Información personal</legend><div class="fields">
+        <fieldset class="personal"><legend class="visually-hidden">Información personal</legend><div class="fields">
           <div class="field"><label for="name">Nombre completo *</label><input id="name" name="name" autocomplete="name" required maxlength="100" placeholder="Tu nombre y apellido"></div>
           <div class="field"><label for="title">Ocupación o perfil *</label><input id="title" name="title" required maxlength="120" placeholder="Ej. Desarrollador de software junior"></div>
           <div class="field"><label for="email">Correo electrónico *</label><input id="email" name="email" type="email" autocomplete="email" required maxlength="160" placeholder="nombre@ejemplo.com"></div>
           <div class="field"><label for="phone">Teléfono</label><input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="30" placeholder="+1 809 555 0123"></div>
           <div class="field"><label for="link">LinkedIn o sitio profesional</label><input id="link" name="link" type="url" maxlength="300" placeholder="https://..."></div>
           <div class="field"><label for="birthday">Fecha de nacimiento (opcional)</label><input id="birthday" name="birthday" type="date" min="1900-01-01"></div>
-        </div><div class="field"><label for="summary">Perfil profesional</label><textarea id="summary" name="summary" rows="4" maxlength="3000" placeholder="Resume tu enfoque, experiencia y lo que puedes aportar."></textarea></div></fieldset>
+        </div></fieldset>
         <div id="dynamic-sections"></div>
-        <div class="form-actions"><button type="submit">Actualizar vista previa</button><button type="button" id="clear" class="quiet">Borrar todo</button></div>
+        <div class="form-actions"><button type="submit">Generar / actualizar CV</button><button type="button" id="clear" class="quiet">Borrar todo</button></div>
       </form>
     </section>
     <section class="preview-section" aria-labelledby="preview-title">
-      <div class="section-top"><div><p class="eyebrow">02 / REVISA Y DESCARGA</p><h2 id="preview-title">Tu currículum</h2></div></div>
+      <div class="section-top"><div><h2 id="preview-title">Vista previa del currículum</h2></div></div>
       <p id="status" role="status" aria-live="polite">Completa tus datos y actualiza la vista previa.</p>
       <div class="export-actions"><button type="button" id="download" disabled>Descargar PDF</button><button type="button" id="print" class="secondary" disabled>Imprimir / guardar PDF</button><button type="button" id="edit" class="quiet" hidden>Volver a editar</button></div>
       <p class="export-hint">PDF A4 con texto seleccionable. Para otros alfabetos o emojis, utiliza «Imprimir / guardar PDF» y selecciona A4 en el diálogo.</p>
-      <div id="preview" class="preview"><div class="empty"><span aria-hidden="true">CV</span><h3>Una página para contar tu historia.</h3><p>Tu vista previa aparecerá aquí. Puedes comenzar con el ejemplo y adaptarlo.</p></div></div>
+      <div id="preview" class="preview"><div class="empty"><p>Tu CV aparecerá aquí después de generarlo.</p></div></div>
     </section>
   </div>
 </main>
-<footer class="container site-footer">Creado por Jeison Rosario · HTML, CSS y JavaScript · Sin servidor ni base de datos.</footer>
+<footer class="container site-footer">Tus datos permanecen en esta pestaña y no se guardan al recargar. · <a href="https://jeison-rosario.github.io/proyectos/">Portafolio de Jeison Rosario</a></footer>
 </body>
 </html>
