@@ -1,53 +1,79 @@
 # Generador de CV
 
-Aplicación web para completar información profesional, construir una vista de currículum y exportarla a PDF desde el navegador.
+Aplicación estática para completar un perfil profesional, revisar el currículum y descargarlo como PDF con texto seleccionable. Desarrollada por [Jeison Rosario](https://github.com/Jeison-Rosario).
 
-## Tecnologías
+**Demo:** https://jeison-rosario.github.io/generador-de-cv/
 
-HTML, CSS, JavaScript y Bootstrap. La exportación utiliza html2canvas 1.4.1 y jsPDF 2.5.1 cargados desde CDN.
+## Qué permite hacer
 
-## Funcionalidades implementadas
+- Introducir datos personales y un resumen profesional. Solo nombre, ocupación y correo son obligatorios.
+- Agregar y eliminar habilidades, software, idiomas, experiencias, educación y certificaciones (hasta 20 entradas por sección).
+- Dejar vacías las secciones opcionales; las filas parcialmente completadas muestran errores específicos.
+- Marcar estudios o empleos «En curso», validar el orden de las fechas y aceptar teléfonos con prefijo internacional.
+- Generar y actualizar una única vista previa sin borrar el formulario. Si hay cambios, actualizarla antes de exportar.
+- Cargar un ejemplo ficticio, volver a editar y borrar todo con confirmación.
+- Descargar un PDF A4 de texto con ajuste de líneas, saltos de página y numeración; o utilizar el diálogo nativo de impresión.
 
-- Datos personales, ocupación, contacto y enlace a LinkedIn.
-- Secciones dinámicas de habilidades, software e idiomas con niveles.
-- Experiencia laboral, educación y certificaciones con fechas.
-- Vista de currículum construida con JavaScript.
-- Descarga del CV como PDF a partir de una captura de la vista.
+## Uso
 
-## Uso local
+Abrir `index.html` en un navegador moderno o acceder a la demo. No necesita Node.js, base de datos ni servidor de aplicaciones para funcionar.
 
-No requiere base de datos ni instalación de paquetes.
+1. Completar los datos o pulsar **Cargar ejemplo**.
+2. Agregar las secciones necesarias y eliminar las entradas que no se usarán.
+3. Pulsar **Actualizar vista previa** y corregir los errores indicados.
+4. Revisar el resultado y pulsar **Descargar PDF**. Para editar, cambiar el formulario y actualizar otra vez.
+5. Para imprimir o guardar mediante el navegador, usar **Imprimir / guardar PDF**, seleccionar papel A4 y desactivar encabezados y pies automáticos si se desea.
 
-1. Clonar o descargar el repositorio.
-2. Abrir `index.html` en un navegador moderno.
-3. Completar los campos y agregar los elementos de cada sección.
-4. Generar el currículum y utilizar el botón de descarga.
+Para desarrollo también se puede servir la carpeta con `python -m http.server 8000` y abrir http://localhost:8000/.
 
-También puede servirse la carpeta con un servidor estático, por ejemplo `python -m http.server 8000`, si Python está instalado. Abrir entonces http://localhost:8000. La exportación requiere acceso a las librerías del CDN.
+## Privacidad y límites
 
-## Organización
+Los campos se procesan en el navegador: no se envían a una API ni se guardan en localStorage, cookies o bases de datos. Al recargar o cerrar la pestaña, la aplicación no recupera el borrador. Descargar el resultado antes de salir.
 
-- `index.html`: formulario e importaciones.
-- `assets/js/site/index.js`: validación, secciones dinámicas, generación y exportación.
-- `assets/css/site/site.css`: estilos propios.
-- `assets/`: también contiene las dependencias locales de Bootstrap.
+jsPDF **4.2.1** se carga desde jsDelivr con versión fija e integridad SRI; esa descarga necesita conexión. Si no carga, la aplicación ofrece el diálogo nativo de impresión. La interfaz y la vista previa no necesitan esa biblioteca.
 
-## Consideraciones actuales
+El PDF descargado utiliza Helvetica y admite texto latino, incluidos acentos y ñ. Para otros alfabetos o emojis, se indica utilizar la impresión del navegador para evitar caracteres corruptos. El PDF de descarga tiene su propio diseño de una columna; no es una captura de pantalla ni una copia píxel a píxel de la vista previa. Los párrafos extensos pueden continuar en otra página, sin recortar una imagen. La impresión y la descarga pueden tener una distribución ligeramente diferente.
 
-- El formulario se limpia después de generar el CV; no hay guardado persistente implementado en el JavaScript revisado.
-- El PDF se genera como imagen: comprobar legibilidad, selección de texto y cortes con documentos extensos.
-- El HTML declara idioma inglés aunque la interfaz está en español.
-- El campo de ocupación tiene tipo email y el de correo tipo texto: corregir su semántica y validación.
-- El encabezado de certificaciones se construye como “Educación”: corregir esa etiqueta.
+Límites de texto: nombre 100, ocupación 120, correo 160, enlace 300, resumen 3000, títulos/instituciones 140 y descripciones 2000 caracteres. Los datos introducidos se renderizan como texto, y los enlaces solo admiten HTTP/HTTPS sin credenciales.
 
-## Próximas mejoras
+## Estructura
 
-Guardar borradores con consentimiento del usuario, permitir editar el CV generado, separar captura de datos y presentación, ofrecer plantillas y mejorar la exportación con texto seleccionable y saltos de página controlados. Añadir pruebas para campos vacíos, fechas, enlaces y currículos de varias páginas.
+| Archivo | Responsabilidad |
+| --- | --- |
+| `index.html` | Formulario, controles accesibles e importaciones |
+| `assets/css/site/site.css` | Diseño adaptable, vista del CV y estilos de impresión |
+| `assets/js/site/data.js` | Validación y modelo compartido de secciones |
+| `assets/js/site/index.js` | Entradas dinámicas, estado del formulario y vista previa |
+| `assets/js/site/pdf.js` | PDF de texto y paginación, sin html2canvas |
+| `test/cv.test.cjs` | Pruebas de reglas, interacción DOM y PDF real |
 
-## Validación
+Los archivos locales de Bootstrap del proyecto original se conservan en `assets/`, aunque la interfaz actual no los carga. No hay paso de compilación.
 
-README basado en lectura del HTML y JavaScript. No se ejecutó una sesión de navegador ni se validó un PDF exportado.
+## Pruebas de desarrollo
 
-## Autor
+Node.js 22 o superior. Estas dependencias solo se necesitan para desarrollar y comprobar el proyecto, no para publicarlo en GitHub Pages.
 
-[Jeison Rosario](https://github.com/Jeison-Rosario)
+```sh
+npm ci
+npm test
+```
+
+Las pruebas comprueban campos opcionales, contactos y enlaces inválidos, fechas, niveles, eliminación de filas, IDs y etiquetas, conservación del formulario, regeneración, texto que parece HTML, ejemplo, limpieza, cambios pendientes y la alternativa si falla el CDN. También generan PDF reales corto y largo en `/tmp/cv-qa` (o el directorio definido por `CV_QA_DIR`).
+
+Validación de esta revisión: 10 pruebas aprobadas; PDF de una y varias páginas renderizados con Poppler, comprobación del texto extraíble y acentos; archivo del CDN contrastado con la versión de jsPDF utilizada en las pruebas. La revisión visual del formulario en navegador y las pruebas en dispositivos reales quedan pendientes.
+
+Antes de publicar una nueva versión, comprobar en escritorio y móvil:
+
+- Completar solo los campos obligatorios y generar.
+- Agregar y eliminar entradas, marcar «En curso» y rechazar una fecha final anterior al inicio.
+- Editar después de generar, actualizar y comprobar que el PDF refleja los cambios.
+- Exportar un CV corto y otro largo; comprobar las primeras y últimas líneas y los acentos.
+- Probar el diálogo de impresión y la descarga desde el móvil.
+
+## Publicación
+
+GitHub Pages sirve los archivos estáticos del repositorio, sin consumir recursos de alwaysdata. Fusionar el PR hacia la rama configurada en Pages y esperar a que termine su despliegue. No subir `node_modules`.
+
+## Dependencias
+
+JavaScript, HTML y CSS nativos; [jsPDF](https://github.com/parallax/jsPDF) (licencia MIT) para la descarga. jsdom se utiliza únicamente para pruebas automatizadas del DOM. La vista de impresión utiliza el motor del navegador.
