@@ -20,7 +20,7 @@ Abrir `index.html` en un navegador moderno o acceder a la demo. No necesita Node
 
 1. Completar los datos o pulsar **Cargar ejemplo**.
 2. Agregar las secciones necesarias y eliminar las entradas que no se usarán.
-3. Pulsar **Actualizar vista previa** y corregir los errores indicados.
+3. Pulsar **Generar / actualizar CV** y corregir los errores indicados.
 4. Revisar el resultado y pulsar **Descargar PDF**. Para editar, cambiar el formulario y actualizar otra vez.
 5. Para imprimir o guardar mediante el navegador, usar **Imprimir / guardar PDF**, seleccionar papel A4 y desactivar encabezados y pies automáticos si se desea.
 
@@ -77,3 +77,25 @@ GitHub Pages sirve los archivos estáticos del repositorio, sin consumir recurso
 ## Dependencias
 
 JavaScript, HTML y CSS nativos; [jsPDF](https://github.com/parallax/jsPDF) (licencia MIT) para la descarga. jsdom se utiliza únicamente para pruebas automatizadas del DOM. La vista de impresión utiliza el motor del navegador.
+## Flujo de edición y recuperación
+
+El formulario conserva las entradas editables; la vista previa representa la última versión validada. Tras modificar un dato, las exportaciones se deshabilitan hasta volver a generar. Una fila completamente vacía se omite; una fila empezada debe completarse o eliminarse.
+
+Las fechas de trayectoria usan mes y año. Marcar **En curso / empleo actual** deshabilita la fecha final. La fecha de nacimiento es opcional. El ejemplo y el borrado piden confirmación si corresponde; no hay historial de versiones ni recuperación al recargar.
+
+## Solución de problemas
+
+| Situación | Acción |
+| --- | --- |
+| Descarga deshabilitada | Generar de nuevo y resolver los errores de campos |
+| Fallo del CDN | Revisar conexión o usar impresión nativa |
+| Otro alfabeto o emoji no exportable | Usar «Imprimir / guardar PDF» |
+| PDF distinto a la vista previa | La descarga tiene un diseño propio de texto |
+| Impresión con fecha o dirección web | Desactivar encabezados y pies automáticos del navegador |
+| Borrador perdido al recargar | No existe almacenamiento persistente implementado |
+
+## Desarrollo y contribución
+
+Modificar `data.js` para reglas, `index.js` para controles y vista previa, y `pdf.js` para descarga y paginación. Conservar etiquetas asociadas, IDs únicos y `textContent` para datos introducidos por el usuario. Mantener la interfaz original de Bootstrap y verificar el caso afectado con documentos cortos y largos.
+
+Como ampliaciones futuras: guardado de borradores con consentimiento y una fuente PDF con mayor cobertura de caracteres. No están implementadas actualmente. Esta ampliación documental no vuelve a ejecutar las pruebas ya descritas.
