@@ -61,10 +61,17 @@
   function initGroups() {
     for(const [key,group] of Object.entries(groups)) {
       const section=node('section',undefined,'group');section.setAttribute('aria-labelledby',key+'-title');
-      const title=node('h3',group.label);title.id=key+'-title';section.append(title,node('p','Opcional. Las entradas completamente vacías no se incluyen.'));
+      const title=node('h3',group.label);title.id=key+'-title';title.classList.add('text-center');section.append(title,node('p','Opcional. Las entradas completamente vacías no se incluyen.'));
       const rows=node('div');rows.id=key+'-rows';
       const add=node('button','Agregar '+group.name.toLowerCase(),'secondary');add.type='button';add.dataset.add=key;
       section.append(rows,add);$('dynamic-sections').append(section);addRow(key,{},false);
+      if (key === 'languages') {
+        const summary=node('section',undefined,'group');summary.setAttribute('aria-labelledby','summary-title');
+        const heading=node('h3','Resumen profesional','text-center');heading.id='summary-title';
+        const wrap=node('div',undefined,'field');const label=node('label','Resumen de tu carrera profesional (opcional)');label.htmlFor='summary';
+        const area=node('textarea');area.id='summary';area.name='summary';area.rows=5;area.maxLength=3000;area.placeholder='Resumen de tu carrera profesional';
+        wrap.append(label,area);summary.append(heading,wrap);$('dynamic-sections').append(summary);
+      }
     }
   }
   function collect() {
@@ -96,20 +103,24 @@
   }
   function render(data) {
     const article=node('article',undefined,'cv-document');article.setAttribute('aria-label','Currículum de '+data.name);
-    article.append(node('h2',data.name),node('p',data.title,'cv-subtitle'));
-    article.append(node('p',[data.email,data.phone].filter(Boolean).join(' | '),'cv-contact'));
-    if(data.link) {const p=node('p',undefined,'cv-contact'),link=node('a',data.link);link.href=data.link;link.target='_blank';link.rel='noopener noreferrer';p.append(link);article.append(p);}
-    if(data.birthday) article.append(node('p','Nacimiento: '+data.birthday.split('-').reverse().join('/'),'cv-contact'));
-    if(data.summary) {const section=node('section');section.append(node('h3','Perfil profesional'),node('p',data.summary));article.append(section);}
+    const sidebar=node('div',undefined,'cv-sidebar card'),main=node('div',undefined,'cv-main card');
+    const identity=node('div',undefined,'cv-identity');identity.append(node('h2',data.name),node('p',data.title,'cv-subtitle'));sidebar.append(identity);
+    const contact=node('section',undefined,'cv-contact-section');contact.append(node('h3','Información personal'));
+    contact.append(node('p','Correo electrónico: '+data.email,'cv-contact'));
+    if(data.phone) contact.append(node('p','Teléfono: '+data.phone,'cv-contact'));
+    if(data.link) {const p=node('p',undefined,'cv-contact'),link=node('a',data.link);link.href=data.link;link.target='_blank';link.rel='noopener noreferrer';p.append(link);contact.append(p);}
+    if(data.birthday) contact.append(node('p','Nacimiento: '+data.birthday.split('-').reverse().join('/'),'cv-contact'));
+    sidebar.append(contact);
+    if(data.summary) {const section=node('section');section.append(node('h3','Resumen profesional'),node('p',data.summary));main.append(section);}
     for(const key of ['experience','education','certifications','skills','software','languages']) {
       if(!data[key].length) continue;
       const section=node('section');section.append(node('h3',groups[key].label));
-      if(groups[key].kind==='rating') {const ul=node('ul',undefined,'cv-list');data[key].forEach(row=>ul.append(node('li',`${row.name} - ${levels[Number(row.level)-1]} (${row.level}/5)`)));section.append(ul);}
-      else for(const row of data[key]) {const entry=node('div',undefined,'cv-entry');entry.append(node('h4',row.name+' | '+row.org),node('p',period(row),'cv-date'));if(row.description) entry.append(node('p',row.description));section.append(entry);}
-      article.append(section);
+      if(groups[key].kind==='rating') {const ul=node('ul',undefined,'cv-list');data[key].forEach(row=>ul.append(node('li',`${row.name} - ${levels[Number(row.level)-1]} (${row.level}/5)`)));section.append(ul);sidebar.append(section);}
+      else {for(const row of data[key]) {const entry=node('div',undefined,'cv-entry');entry.append(node('h4',row.name+' | '+row.org),node('p',period(row),'cv-date'));if(row.description) entry.append(node('p',row.description));section.append(entry);}main.append(section);}
     }
+    article.append(sidebar);if(main.hasChildNodes()) article.append(main);else article.classList.add('cv-minimal');
     $('preview').replaceChildren(article);generated=data;$('download').disabled=false;$('print').disabled=false;$('edit').hidden=false;
-    $('status').textContent='Vista previa actualizada. Tus datos siguen en el formulario para editarlos.';
+    $('status').textContent='CV generado. Puedes editar el formulario y actualizarlo sin perder tus datos.';
   }
   function reset() {
     form.reset();for(const key of Object.keys(groups)) {$(key+'-rows').replaceChildren();addRow(key,{},false);}
@@ -117,9 +128,9 @@
     $('preview').replaceChildren(node('p','Completa tus datos para generar una nueva vista previa.','empty'));
     $('status').textContent='Formulario borrado. No hay datos guardados.';
   }
+  initGroups();
   personal.forEach(key=>{const input=$(key),error=node('p','','field-error');error.id=key+'-error';input.setAttribute('aria-describedby',error.id);input.after(error);});
   $('birthday').max=new Date().toISOString().slice(0,10);
-  initGroups();
   form.addEventListener('input',markDirty);
   form.addEventListener('change',event=>{const row=event.target.closest('.row-card');if(row)syncCurrent(row);markDirty();});
   form.addEventListener('click',event=>{

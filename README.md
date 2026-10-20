@@ -41,13 +41,13 @@ Límites de texto: nombre 100, ocupación 120, correo 160, enlace 300, resumen 3
 | Archivo | Responsabilidad |
 | --- | --- |
 | `index.html` | Formulario, controles accesibles e importaciones |
-| `assets/css/site/site.css` | Diseño adaptable, vista del CV y estilos de impresión |
+| `assets/css/site/site.css` | Ajustes mínimos sobre Bootstrap, vista del CV y estilos de impresión |
 | `assets/js/site/data.js` | Validación y modelo compartido de secciones |
 | `assets/js/site/index.js` | Entradas dinámicas, estado del formulario y vista previa |
 | `assets/js/site/pdf.js` | PDF de texto y paginación, sin html2canvas |
 | `test/cv.test.cjs` | Pruebas de reglas, interacción DOM y PDF real |
 
-Los archivos locales de Bootstrap del proyecto original se conservan en `assets/`, aunque la interfaz actual no los carga. No hay paso de compilación.
+La interfaz conserva Bootstrap local, el encabezado azul, el formulario centrado y las tarjetas oscuras del CV original. Las habilidades, software e idiomas preceden al resumen y a la trayectoria, como en la versión inicial. Se añaden únicamente los controles de las funciones nuevas y ajustes de accesibilidad y móviles. No hay paso de compilación.
 
 ## Pruebas de desarrollo
 
